@@ -16,32 +16,66 @@
 //        for each u adj. to v
 //            Relax(u,v,w)
 
+#include <boost/config.hpp>
+#include <vector>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/bellman_ford_shortest_paths.hpp>
 
-typedef boost::property<boost::edge_weight_t,
-						int> EdgeWeightProperty;
+using namespace boost;
 
-typedef boost::adjacency_list<boost::listS,
-							  boost::vecS,
-							  boost::directedS,
-							  boost::no_property,
-							  EdgeWeightProperty> Graph;
+struct EdgeProperties {
+	int weight;
+};
 
+typedef adjacency_list<listS, vecS, directedS, no_property, EdgeProperties> Graph;
+
+typedef std::pair<int, int> E;
 
 int main()
 {
-	// lets just try it on the example
-	Graph G;
-	// we need an intelligent way of inputting this information
-	// but for the time being this is easy
-	boost::add_edge(0,1,-3,G);
-	boost::add_edge(1,2,-7,G);
-	boost::add_edge(1,3,-4,G);
-	boost::add_edge(2,4,-2,G);
-	boost::add_edge(2,5,-4,G);
-	boost::add_edge(3,5,-4,G);
-	boost::add_edge(3,6,-6,G);
+	const int N = 7;
+	const int n_edges = 7;
+	E edge_array[n_edges] = {E(0,1), E(1,2), E(1,3), E(2,4), E(2,5), E(3,5), E(3,6)};
+	int weight[n_edges]  = {-3,-7,-4,-2,-4,-4,-6};
 	
+	// lets just try it on the example
+	Graph g(edge_array, edge_array + n_edges, N);	
+	
+	graph_traits < Graph >::edge_iterator ei, ei_end;
+
+	property_map<Graph, int EdgeProperties::*>::type 
+		weight_pmap = get(&EdgeProperties::weight, g);
+		
+	int i = 0;
+	for (boost::tie(ei, ei_end) = edges(g); ei != ei_end; ++ei, ++i)
+		weight_pmap[*ei] = weight[i];
+
+	// setting all the nodes to infinite	
+	std::vector<int> distance(N, (std::numeric_limits < short >::max)());
+
+	// setting parents or predec.
+	std::vector<std::size_t> parent(N);
+	for (i = 0; i < N; ++i)
+		parent[i] = i;
+	distance[0] = 0;
+
+	
+	bool r = bellman_ford_shortest_paths(g,
+										int(N),
+										weight_pmap,
+										&parent[0],
+										&distance[0], 
+	 									closed_plus<int>(),
+										std::less<int>(),
+										default_bellman_visitor());
+	
+
+	for(auto& v: parent){
+		std::cout << v << std::endl;
+	}
+
     return 0;
 }
