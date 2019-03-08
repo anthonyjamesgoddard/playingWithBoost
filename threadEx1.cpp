@@ -15,10 +15,11 @@ int main()
     boost::timer::cpu_timer timer;
 
     std::uint64_t tot1 = 0, tot2 = 0;
-	boost::thread thread_1(count, 0, 500, boost::ref(tot1));
+	boost::thread thread_1(count, 0, 5000000, boost::ref(tot1));
+	boost::thread thread_2(count, 5000001, 10000000, boost::ref(tot2));
 	thread_1.join();
-	boost::thread thread_2(count, 501, 1000, boost::ref(tot2));
 	thread_2.join();
+	
 	auto total = tot1 + tot2;
 
     std::cout << timer.format();
