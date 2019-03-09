@@ -21,7 +21,7 @@ int main()
 	thread_2.join();
 	
 	auto total = tot1 + tot2;
-
+	// now print the result
     std::cout << timer.format();
     std::cout << total << '\n';
 }
