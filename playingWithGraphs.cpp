@@ -36,10 +36,17 @@ typedef std::pair<int, int> E;
 
 int main()
 {
-	const int N = 7;
-	const int n_edges = 7;
-	E edge_array[n_edges] = {E(0,1), E(1,2), E(1,3), E(2,4), E(2,5), E(3,5), E(3,6)};
-	int weight[n_edges]  = {-3,-7,-4,-2,-4,-4,-6};
+	const int N = 11;
+	const int n_edges = 13;
+	E edge_array[n_edges] = {E(0,1), E(1,2), E(1,3),
+							 E(2,4), E(2,5), E(3,5),
+							 E(3,6), E(4,7), E(4,8),
+	                         E(5,8), E(5,9), E(6,9),
+	                         E(6,10)};
+	
+	int weight[n_edges]  = {-3,-7,-4,-2,
+							-4,-4,-6,-8,
+	                        -5,-9,-3};
 	
 	// lets just try it on the example
 	Graph g(edge_array, edge_array + n_edges, N);	
@@ -73,8 +80,8 @@ int main()
 										default_bellman_visitor());
 	
 
-	for(auto& v: parent){
-		std::cout << v << std::endl;
+	for(int i=0;i<N;i++){
+		std::cout << parent[i] << ' ' << i << std::endl;
 	}
 
     return 0;
